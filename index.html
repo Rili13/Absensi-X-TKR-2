@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Absensi X TKR 2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Inter, sans-serif;
+      }
+
+      body {
+        background: #0f172a;
+        color: white;
+      }
+
+      /* HEADER */
+      .header {
+        padding: 20px;
+        text-align: center;
+        background: #111827;
+        border-bottom: 1px solid #1f2937;
+      }
+
+      .container {
+        max-width: 500px;
+        margin: auto;
+        padding: 20px;
+      }
+
+      /* CARD */
+      .card {
+        background: #111827;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 16px;
+        border: 1px solid #1f2937;
+      }
+
+      /* BUTTON */
+      button {
+        width: 100%;
+        padding: 14px;
+        margin-top: 10px;
+        border: none;
+        border-radius: 10px;
+        font-size: 14px;
+        cursor: pointer;
+      }
+
+      .btn-blue {
+        background: #2563eb;
+        color: white;
+      }
+      .btn-green {
+        background: #16a34a;
+        color: white;
+      }
+      .btn-gray {
+        background: #374151;
+        color: white;
+      }
+      .btn-red {
+        background: #dc2626;
+        color: white;
+      }
+
+      /* INPUT */
+      select,
+      input {
+        width: 100%;
+        padding: 12px;
+        border-radius: 10px;
+        border: 1px solid #374151;
+        background: #020617;
+        color: white;
+        margin-top: 10px;
+      }
+
+      /* VIDEO */
+      video {
+        width: 100%;
+        border-radius: 10px;
+      }
+
+      /* REKAP */
+      .list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .item {
+        background: #020617;
+        padding: 10px;
+        border-radius: 10px;
+        border: 1px solid #1f2937;
+      }
+
+      .item img {
+        width: 100%;
+        margin-top: 5px;
+        border-radius: 8px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="header">
+      <h2>Absensi Digital</h2>
+      <p id="userText">Belum login</p>
+    </div>
+
+    <div class="container">
+      <!-- LOGIN -->
+      <div id="loginBox" class="card">
+        <h3>Login X TKR 2</h3>
+        <select id="username"></select>
+        <input id="password" type="password" placeholder="Password (123)" />
+        <button class="btn-blue" onclick="login()">Masuk</button>
+      </div>
+
+      <!-- APP -->
+      <div id="app" style="display: none">
+        <!-- CAMERA -->
+        <div class="card">
+          <h3>Kamera</h3>
+          <video id="video" autoplay></video>
+        </div>
+
+        <!-- ACTION -->
+        <div class="card">
+          <h3>Absen</h3>
+
+          <select id="jenis">
+            <option>Masuk</option>
+            <option>Izin</option>
+            <option>Pulang</option>
+          </select>
+
+          <button class="btn-blue" onclick="ambilFoto()">Ambil Foto</button>
+          <button class="btn-green" onclick="absen()">Kirim Absen</button>
+        </div>
+
+        <!-- SETTINGS -->
+        <div class="card">
+          <h3>Lainnya</h3>
+          <button class="btn-gray" onclick="logout()">Logout</button>
+          <button class="btn-red" onclick="hapusSemua()">
+            Hapus Semua Data
+          </button>
+        </div>
+
+        <!-- REKAP -->
+        <div class="card">
+          <h3>Rekap</h3>
+          <div class="list" id="rekap"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const siswa = [
+        "ABDUL HADI",
+        "ADITYA",
+        "AHMAD RIFA'I MUZIB",
+        "AKBAR SAPUTRA",
+        "ALDI MAULANA",
+        "ALVI NUR HIKAM",
+        "ANDIKA YAHYA",
+        "BADRU",
+        "DAFA FAHMI ALFARIZI",
+        "DAFIN ILHAM SUZANA",
+        "DIKA LESMANA",
+        "EKA AHMAD SAPUTRA",
+        "FAIRUZ AZHAR DARAJAT",
+        "FITRI ASHILA TANJUNG",
+        "HABIB DIA KHAIRUN",
+        "IKRAM MAULIANA",
+        "IQRA FIKRI ALVIANSYAH",
+        "JOEL OSTEEN SIBORO",
+        "M.DIMAS HERMAWAN",
+        "MAMAN",
+        "MOH.RIDHO PRATAMA",
+        "MUHAMMAD AZIL ZALALUDIN",
+        "MUHAMMAD ILHAM JAELANI",
+        "MUHAMMAD SYAICHAN ASOFY",
+        "MUHAMMAD AKMAL ALFARIZI",
+        "M.IBNU QOBLI ALJOHARI",
+        "MUHAMMAD MURTABAH ILHAM",
+        "MUHAMMAD RILI RAMADHAN",
+        "NANDI",
+        "NURDIN",
+        "RADITYA NUR AFRIANSYAH",
+        "RAFLI AKBAR",
+        "RAKHA MAHARDIKA",
+        "RENDIKA NURSATRIA PUTRA",
+        "REYHAN JAMES SAPUTRA",
+        "RICO ERDIAN",
+        "RIZKY RAMADHAN",
+        "YASYFA AGHNIYA PUTRI",
+      ];
+
+      const usernameEl = document.getElementById("username");
+      siswa.forEach((n) => (usernameEl.innerHTML += `<option>${n}</option>`));
+
+      let currentUser = null;
+      let fotoData = null;
+
+      // LOGIN
+      function login() {
+        if (password.value !== "123") {
+          alert("Password salah");
+          return;
+        }
+        currentUser = usernameEl.value;
+        localStorage.setItem("user", currentUser);
+        masukApp();
+      }
+
+      // MASUK APP
+      function masukApp() {
+        loginBox.style.display = "none";
+        app.style.display = "block";
+        userText.innerText = currentUser + " - X TKR 2";
+
+        navigator.mediaDevices
+          .getUserMedia({ video: true })
+          .then((s) => (video.srcObject = s));
+
+        loadRekap();
+      }
+
+      // AUTO LOGIN
+      window.onload = function () {
+        if (localStorage.getItem("user")) {
+          currentUser = localStorage.getItem("user");
+          masukApp();
+        }
+      };
+
+      // FOTO
+      function ambilFoto() {
+        let canvas = document.createElement("canvas");
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext("2d").drawImage(video, 0, 0);
+        fotoData = canvas.toDataURL();
+        alert("Foto siap");
+      }
+
+      // ABSEN
+      function absen() {
+        if (!fotoData) {
+          alert("Ambil foto dulu");
+          return;
+        }
+
+        let data = JSON.parse(localStorage.getItem("absen") || "[]");
+
+        data.push({
+          user: currentUser,
+          jenis: jenis.value,
+          waktu: new Date().toLocaleString("id-ID"),
+          foto: fotoData,
+        });
+
+        localStorage.setItem("absen", JSON.stringify(data));
+        loadRekap();
+      }
+
+      // REKAP
+      function loadRekap() {
+        let data = JSON.parse(localStorage.getItem("absen") || "[]");
+        rekap.innerHTML = "";
+
+        data
+          .slice()
+          .reverse()
+          .forEach((d, i) => {
+            rekap.innerHTML += `
+    <div class="item">
+      <b>${d.user}</b><br>
+      ${d.jenis}<br>
+      ${d.waktu}
+      <img src="${d.foto}">
+      <button class="btn-red" onclick="hapus(${data.length - 1 - i})">Hapus</button>
+    </div>`;
+          });
+      }
+
+      // HAPUS
+      function hapus(i) {
+        let data = JSON.parse(localStorage.getItem("absen") || "[]");
+        data.splice(i, 1);
+        localStorage.setItem("absen", JSON.stringify(data));
+        loadRekap();
+      }
+
+      // RESET
+      function hapusSemua() {
+        localStorage.removeItem("absen");
+        loadRekap();
+      }
+
+      // LOGOUT
+      function logout() {
+        localStorage.removeItem("user");
+        location.reload();
+      }
+    </script>
+  </body>
+</html>
